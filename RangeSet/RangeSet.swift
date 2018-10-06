@@ -64,3 +64,48 @@ public struct RangeSet<Bound: Comparable> {
         ]
     }
 }
+
+extension RangeSet: SetAlgebra {
+    public typealias Element = Bound
+    public typealias ArrayLiteralElement = Bound
+
+    public func contains(_ member: Bound) -> Bool {
+        fatalError("not implemented")
+    }
+
+    public func union(_ other: RangeSet<Bound>) -> RangeSet<Bound> {
+        fatalError("not implemented")
+    }
+
+    public func intersection(_ other: RangeSet<Bound>) -> RangeSet<Bound> {
+        fatalError("not implemented")
+    }
+
+    public func symmetricDifference(_ other: RangeSet<Bound>) -> RangeSet<Bound> {
+        fatalError("not implemented")
+    }
+
+    public mutating func insert(_ newMember: Bound) -> (inserted: Bool, memberAfterInsert: Bound) {
+        fatalError("not implemented")
+    }
+
+    public mutating func remove(_ member: Bound) -> Bound? {
+        fatalError("not implemented")
+    }
+
+    public mutating func update(with newMember: Bound) -> Bound? {
+        fatalError("not implemented")
+    }
+
+    public mutating func formUnion(_ other: RangeSet<Bound>) {
+        fatalError("not implemented")
+    }
+
+    public mutating func formIntersection(_ other: RangeSet<Bound>) {
+        fatalError("not implemented")
+    }
+
+    public mutating func formSymmetricDifference(_ other: RangeSet<Bound>) {
+        fatalError("not implemented")
+    }
+}
