@@ -168,10 +168,10 @@ public struct RangeSet<Bound: Comparable> {
 }
 
 extension RangeSet: SetAlgebra {
-    public typealias Element = Bound
-    public typealias ArrayLiteralElement = Bound
+    public typealias Element = Range<Bound>
+    public typealias ArrayLiteralElement = Range<Bound>
 
-    public func contains(_ member: Bound) -> Bool {
+    public func contains(_ member: Range<Bound>) -> Bool {
         fatalError("not implemented")
     }
 
@@ -187,15 +187,15 @@ extension RangeSet: SetAlgebra {
         fatalError("not implemented")
     }
 
-    public mutating func insert(_ newMember: Bound) -> (inserted: Bool, memberAfterInsert: Bound) {
+    public mutating func insert(_ newMember: Range<Bound>) -> (inserted: Bool, memberAfterInsert: Range<Bound>) {
         fatalError("not implemented")
     }
 
-    public mutating func remove(_ member: Bound) -> Bound? {
+    public mutating func remove(_ member: Range<Bound>) -> Range<Bound>? {
         fatalError("not implemented")
     }
 
-    public mutating func update(with newMember: Bound) -> Bound? {
+    public mutating func update(with newMember: Range<Bound>) -> Range<Bound>? {
         fatalError("not implemented")
     }
 
