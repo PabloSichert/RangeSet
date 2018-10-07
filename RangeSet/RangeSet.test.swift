@@ -3,74 +3,74 @@ import XCTest
 
 class RangeSetTests: XCTestCase {
     func testInitWithoutRange() {
-        let range = RangeSet<Int>()
+        let set = RangeSet<Int>()
 
-        XCTAssert(range.ranges.count == 0)
+        XCTAssert(set.ranges.count == 0)
     }
 
     func testInitWithRangeEmpty() {
-        let range = RangeSet(0..<0)
+        let set = RangeSet(0..<0)
 
-        XCTAssert(range.ranges.count == 0)
+        XCTAssert(set.ranges.count == 0)
     }
 
     func testInitWithRangeContinuous() {
-        let range = RangeSet(0..<1)
+        let set = RangeSet(0..<1)
 
-        XCTAssert(range.ranges.count == 1)
-        XCTAssert(range.ranges[0] == 0..<1)
+        XCTAssert(set.ranges.count == 1)
+        XCTAssert(set.ranges[0] == 0..<1)
     }
 
     func testInitWithRangeDisjoint() {
-        let range = RangeSet([0..<1, 2..<3])
+        let set = RangeSet([0..<1, 2..<3])
 
-        XCTAssert(range.ranges.count == 2)
-        XCTAssert(range.ranges == [0..<1, 2..<3])
+        XCTAssert(set.ranges.count == 2)
+        XCTAssert(set.ranges == [0..<1, 2..<3])
     }
 
     func testInitWithRangesEmpty() {
-        let range = RangeSet<Int>([])
+        let set = RangeSet<Int>([])
 
-        XCTAssert(range.ranges.count == 0)
+        XCTAssert(set.ranges.count == 0)
     }
 
     func testEmptyRangeEmpty() {
-        let range = RangeSet<Int>()
+        let set = RangeSet<Int>()
 
-        XCTAssert(range.isEmpty)
+        XCTAssert(set.isEmpty)
     }
 
     func testEmptyRangeContinuous() {
-        let range = RangeSet(0..<1)
+        let set = RangeSet(0..<1)
 
-        XCTAssert(!range.isEmpty)
+        XCTAssert(!set.isEmpty)
     }
 
     func testEmptyRangeDisjoint() {
-        let range = RangeSet([0..<1, 2..<3])
+        let set = RangeSet([0..<1, 2..<3])
 
-        XCTAssert(!range.isEmpty)
+        XCTAssert(!set.isEmpty)
     }
 
     func testBoundsRangeEmpty() {
-        let range = RangeSet(0..<0)
+        let set = RangeSet(0..<0)
 
-        XCTAssert(range.lowerBound == nil)
-        XCTAssert(range.upperBound == nil)
+        XCTAssert(set.lowerBound == nil)
+        XCTAssert(set.upperBound == nil)
     }
 
     func testBoundsRangeContinuous() {
-        let range = RangeSet(0..<1)
+        let set = RangeSet(0..<1)
 
-        XCTAssert(range.lowerBound == 0)
-        XCTAssert(range.upperBound == 1)
+        XCTAssert(set.lowerBound == 0)
+        XCTAssert(set.upperBound == 1)
     }
 
     func testBoundsRangeDisjoint() {
-        let range = RangeSet([0..<1, 2..<3])
+        let set = RangeSet([0..<1, 2..<3])
 
-        XCTAssert(range.lowerBound == 0)
-        XCTAssert(range.upperBound == 3)
+        XCTAssert(set.lowerBound == 0)
+        XCTAssert(set.upperBound == 3)
     }
 
     func testNormalizeEmpty() {

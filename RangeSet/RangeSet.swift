@@ -1,20 +1,20 @@
 /**
- A range that has a well defined representation for empty, conjunct and disjunct ranges.
+ A range set that has a well defined representation for empty, continuous and disjoint ranges.
  */
 public struct RangeSet<Bound: Comparable> {
     /**
-     The disjunct ranges that compose the range set.
+     The disjoint ranges that compose the range set.
 
      These ranges are guaranteed to be
      - not empty
      - ordered by lower bound, ascending
-     - disjunct
+     - disjoint
 
      Where the number of ranges in the array has a defined meaning:
 
      - `range.count == 0`: empty range set
-     - `range.count == 1`: set with one conjunct range
-     - `range.count > 1`: set with multiple disjoint ranges
+     - `range.count == 1`: set with one continuous range
+     - `range.count > 1`: set with multiple disjoint, continuous ranges
      */
     public let ranges: [Range<Bound>]
 
@@ -54,7 +54,7 @@ public struct RangeSet<Bound: Comparable> {
      Creates a range set from an existing range.
 
      - Parameters:
-        - range: A range to be converted to a set of ranges.
+        - range: A range to convert to a set of ranges.
      */
     public init(_ range: Range<Bound>) {
         guard range.lowerBound < range.upperBound else {
@@ -84,7 +84,7 @@ public struct RangeSet<Bound: Comparable> {
      The ranges in the resulting array are guaranteed to be
      - not empty
      - ordered by lower bound, ascending
-     - disjunct
+     - disjoint
 
      # Example
      ```
@@ -115,8 +115,8 @@ public struct RangeSet<Bound: Comparable> {
         }
 
         var previous: Range<Bound> = sorted[0]
-        var disjunct: [Range<Bound>] = [previous]
-        disjunct.reserveCapacity(sorted.count)
+        var disjoint: [Range<Bound>] = [previous]
+        disjoint.reserveCapacity(sorted.count)
 
         for i in 1..<sorted.count {
             let next = sorted[i]
@@ -124,18 +124,18 @@ public struct RangeSet<Bound: Comparable> {
             guard next.lowerBound > previous.upperBound else {
                 let union = previous.lowerBound..<next.upperBound
 
-                disjunct[disjunct.count - 1] = union
+                disjoint[disjoint.count - 1] = union
                 previous = union
 
                 continue
             }
 
-            disjunct.append(next)
+            disjoint.append(next)
 
             previous = next
         }
 
-        return disjunct
+        return disjoint
     }
 }
 
