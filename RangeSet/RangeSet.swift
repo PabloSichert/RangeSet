@@ -1,5 +1,13 @@
 /**
- A range set that has a well defined representation for empty, continuous and disjoint ranges.
+ A set that has a well defined representation for empty, continuous and
+ disjoint ranges.
+
+ Use this data structure if you need to do set algebra with ranges (e.g.
+ compute a union or intersection of multiple ranges). Is uses an array of
+ `Range<Bound>` for internal representation.
+
+ If you only need to iterate over a continuous range, use `Range<Bound>`
+ instead.
  */
 public struct RangeSet<Bound: Comparable> {
     /**
@@ -16,7 +24,7 @@ public struct RangeSet<Bound: Comparable> {
      - `range.count == 1`: set with one continuous range
      - `range.count > 1`: set with multiple disjoint, continuous ranges
      */
-    public let ranges: [Range<Bound>]
+    public var ranges: [Range<Bound>]
 
     /**
      The lowest lower bound in the range set.
@@ -101,41 +109,96 @@ public struct RangeSet<Bound: Comparable> {
 
      ```
      [
-        1..<3,
-        5..<6
+         1..<3,
+         5..<6
      ]
      ```
+
+     - Parameters:
+        - ranges: An array of ranges to normalize.
      */
     static func normalize(_ ranges: [Range<Bound>]) -> [Range<Bound>] {
-        let notEmpty = ranges.filter { $0.lowerBound < $0.upperBound }
-        let sorted = notEmpty.sorted(by: { $0.lowerBound < $1.lowerBound })
+        var sorted = ranges.sorted(by: { $0.lowerBound < $1.lowerBound })
 
-        guard sorted.count > 0 else {
-            return []
+        RangeSet.normalize(sorted: &sorted)
+
+        return sorted
+    }
+
+    /**
+     Removes empty ranges and merges overlapping ranges from a given sorted
+     array of ranges.
+
+     After this operation the array is guaranteed to only contain ranges that
+     are
+     - ordered by lower bound, ascending (precondition)
+     - not empty
+     - disjoint
+
+     # Example
+     ```
+     [
+         1..<2,
+         2..<3,
+         4..<4
+         5..<6,
+         5..<6,
+     ]
+     ```
+
+     will be normalized to
+
+     ```
+     [
+         1..<3,
+         5..<6
+     ]
+     ```
+
+     - Parameters:
+        - ranges: An array of ranges, sorted ascending by lower bound, to
+          normalize.
+     */
+    static func normalize(sorted ranges: inout [Range<Bound>]) {
+        guard ranges.count > 0 else {
+            return
         }
 
-        var previous: Range<Bound> = sorted[0]
-        var disjoint: [Range<Bound>] = [previous]
-        disjoint.reserveCapacity(sorted.count)
+        _debugPrecondition((1..<ranges.count).first(where: {
+            ranges[$0].lowerBound < ranges[$0 - 1].lowerBound
+        }) == nil, "Ranges must be sorted ascending by lower bound")
 
-        for i in 1..<sorted.count {
-            let next = sorted[i]
+        var disjointUntil = -1
+        let firstNonEmpty = ranges.firstIndex(where: { !$0.isEmpty })
 
-            guard next.lowerBound > previous.upperBound else {
-                let union = previous.lowerBound..<next.upperBound
+        if let firstNonEmpty = firstNonEmpty {
+            disjointUntil = disjointUntil + 1
 
-                disjoint[disjoint.count - 1] = union
-                previous = union
+            var previous: Range<Bound> = ranges[firstNonEmpty]
 
-                continue
+            for i in (firstNonEmpty + 1)..<ranges.count {
+                let next = ranges[i]
+
+                guard !next.isEmpty else {
+                    continue
+                }
+
+                guard next.lowerBound > previous.upperBound else {
+                    let union = previous.lowerBound..<next.upperBound
+
+                    ranges[disjointUntil] = union
+                    previous = union
+
+                    continue
+                }
+
+                disjointUntil = disjointUntil + 1
+                previous = next
+                ranges[disjointUntil] = next
             }
-
-            disjoint.append(next)
-
-            previous = next
         }
 
-        return disjoint
+        ranges.removeSubrange((disjointUntil + 1)..<ranges.count)
     }
 }
 
@@ -148,7 +211,7 @@ extension RangeSet: SetAlgebra {
     }
 
     public func union(_ other: RangeSet<Bound>) -> RangeSet<Bound> {
-        fatalError("not implemented")
+        return RangeSet(ranges + other.ranges)
     }
 
     public func intersection(_ other: RangeSet<Bound>) -> RangeSet<Bound> {
@@ -172,7 +235,9 @@ extension RangeSet: SetAlgebra {
     }
 
     public mutating func formUnion(_ other: RangeSet<Bound>) {
-        fatalError("not implemented")
+        ranges.append(contentsOf: other.ranges)
+        ranges.sort(by: { $0.lowerBound < $1.lowerBound })
+        RangeSet.normalize(sorted: &ranges)
     }
 
     public mutating func formIntersection(_ other: RangeSet<Bound>) {

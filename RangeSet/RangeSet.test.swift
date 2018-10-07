@@ -73,17 +73,7 @@ class RangeSetTests: XCTestCase {
         XCTAssert(set.upperBound == 3)
     }
 
-    func testNormalizeEmpty() {
-        let ranges = [
-            1..<1
-        ]
-
-        let normalized: [Range<Int>] = []
-
-        XCTAssert(RangeSet.normalize(ranges) == normalized)
-    }
-
-    func testNormalizeUnordered() {
+    func testNormalizeUnsorted() {
         let ranges = [
             3..<4,
             1..<2,
@@ -97,33 +87,7 @@ class RangeSetTests: XCTestCase {
         XCTAssert(RangeSet.normalize(ranges) == normalized)
     }
 
-    func testNormalizeDuplicate() {
-        let ranges = [
-            1..<2,
-            1..<2,
-        ]
-
-        let normalized = [
-            1..<2
-        ]
-
-        XCTAssert(RangeSet.normalize(ranges) == normalized)
-    }
-
-    func testNormalizeOverlapping() {
-        let ranges = [
-            1..<2,
-            2..<3,
-        ]
-
-        let normalized = [
-            1..<3
-        ]
-
-        XCTAssert(RangeSet.normalize(ranges) == normalized)
-    }
-
-    func testNormalizeEmptyUnorderedDuplicateOverlapping() {
+    func testNormalizeUnsortedDuplicateOverlappingWithEmpty() {
         let ranges = [
             5..<6,
             5..<6,
@@ -138,5 +102,73 @@ class RangeSetTests: XCTestCase {
         ]
 
         XCTAssert(RangeSet.normalize(ranges) == normalized)
+    }
+
+    func testNormalizeSortedEmpty() {
+        var ranges: [Range<Int>] = []
+
+        let normalized: [Range<Int>] = []
+
+        RangeSet.normalize(sorted: &ranges)
+
+        XCTAssert(ranges == normalized)
+    }
+
+    func testNormalizeSortedWithEmpty() {
+        var ranges = [
+            1..<1
+        ]
+
+        let normalized: [Range<Int>] = []
+
+        RangeSet.normalize(sorted: &ranges)
+
+        XCTAssert(ranges == normalized)
+    }
+
+    func testNormalizeSortedDuplicate() {
+        var ranges = [
+            1..<2,
+            1..<2,
+        ]
+
+        let normalized = [
+            1..<2
+        ]
+
+        RangeSet.normalize(sorted: &ranges)
+
+        XCTAssert(ranges == normalized)
+    }
+
+    func testNormalizeSortedOverlapping() {
+        var ranges = [
+            1..<2,
+            2..<3,
+        ]
+
+        let normalized = [
+            1..<3
+        ]
+
+        RangeSet.normalize(sorted: &ranges)
+
+        XCTAssert(ranges == normalized)
+    }
+
+    func testUnion() {
+        let set1 = RangeSet(1..<2)
+        let set2 = RangeSet(2..<3)
+
+        XCTAssert(set1.union(set2) == RangeSet(1..<3))
+    }
+
+    func testFormUnion() {
+        var set1 = RangeSet(1..<2)
+        let set2 = RangeSet(2..<3)
+
+        set1.formUnion(set2)
+
+        XCTAssert(set1 == RangeSet(1..<3))
     }
 }
