@@ -83,46 +83,11 @@ public struct RangeSet<Bound: Comparable> {
         - ranges: An array of ranges to convert to a set of ranges.
      */
     public init(_ ranges: [Range<Bound>]) {
-        self.ranges = RangeSet.normalize(ranges)
-    }
-
-    /**
-     Returns a canonic representation for an array of ranges.
-
-     The ranges in the resulting array are guaranteed to be
-     - not empty
-     - ordered by lower bound, ascending
-     - disjoint
-
-     # Example
-     ```
-     [
-         5..<6,
-         5..<6,
-         2..<3,
-         1..<2,
-         4..<4
-     ]
-     ```
-
-     will be normalized to
-
-     ```
-     [
-         1..<3,
-         5..<6
-     ]
-     ```
-
-     - Parameters:
-        - ranges: An array of ranges to normalize.
-     */
-    static func normalize(_ ranges: [Range<Bound>]) -> [Range<Bound>] {
         var sorted = ranges.sorted(by: { $0.lowerBound < $1.lowerBound })
 
         RangeSet.normalize(sorted: &sorted)
 
-        return sorted
+        self.ranges = sorted
     }
 
     /**

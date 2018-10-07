@@ -28,6 +28,13 @@ class RangeSetTests: XCTestCase {
         XCTAssert(set.ranges == [0..<1, 2..<3])
     }
 
+    func testInitWithRangeDisjointUnsorted() {
+        let set = RangeSet([2..<3, 0..<1])
+
+        XCTAssert(set.ranges.count == 2)
+        XCTAssert(set.ranges == [0..<1, 2..<3])
+    }
+
     func testInitWithRangesEmpty() {
         let set = RangeSet<Int>([])
 
@@ -71,37 +78,6 @@ class RangeSetTests: XCTestCase {
 
         XCTAssert(set.lowerBound == 0)
         XCTAssert(set.upperBound == 3)
-    }
-
-    func testNormalizeUnsorted() {
-        let ranges = [
-            3..<4,
-            1..<2,
-        ]
-
-        let normalized = [
-            1..<2,
-            3..<4
-        ]
-
-        XCTAssert(RangeSet.normalize(ranges) == normalized)
-    }
-
-    func testNormalizeUnsortedDuplicateOverlappingWithEmpty() {
-        let ranges = [
-            5..<6,
-            5..<6,
-            2..<3,
-            1..<2,
-            4..<4
-        ]
-
-        let normalized = [
-            1..<3,
-            5..<6
-        ]
-
-        XCTAssert(RangeSet.normalize(ranges) == normalized)
     }
 
     func testNormalizeSortedEmpty() {
@@ -149,6 +125,25 @@ class RangeSetTests: XCTestCase {
 
         let normalized = [
             1..<3
+        ]
+
+        RangeSet.normalize(sorted: &ranges)
+
+        XCTAssert(ranges == normalized)
+    }
+
+    func testNormalizeDuplicateOverlappingWithEmpty() {
+        var ranges = [
+            1..<2,
+            2..<3,
+            4..<4,
+            5..<6,
+            5..<6,
+        ]
+
+        let normalized = [
+            1..<3,
+            5..<6
         ]
 
         RangeSet.normalize(sorted: &ranges)
